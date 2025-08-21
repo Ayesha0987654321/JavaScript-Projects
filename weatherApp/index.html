@@ -1,17 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <link rel="stylesheet" href="style.css"> <!-- External CSS file -->
 </head>
 <body>
-      <div class="card">
-        <div class="search">
-            <input type="text" placeholder="Enter Your City Name" spellcheck="false">
-            <button><img src="assests/images/search.png"></button>
+  <div class="card">
+    <!-- Search box for entering city name -->
+    <div class="search">
+      <input type="text" placeholder="Enter Your City Name" spellcheck="false">
+      <button><img src="assests/images/search.png"></button>
+    </div>
+
+    <!-- Error message shown when city is invalid -->
+    <div class="error">
+      <p>Invalid City Name</p>
+    </div>
+
+    <!-- Weather details section -->
+    <div class="weather">
+      <img src="assests/images/clouds.png" class="weatherIcon">
+      <h1 class="temp">35°C</h1>
+      <h2 class="city">Sadiq Abad</h2>
+
+      <!-- Extra weather details -->
+      <div class="details">
+        <div class="col">
+          <img src="assests/images/humidity.png">
+          <div>
+            <p class="humidity">50%</p>
+            <p>Humidity</p>
+          </div>
+        </div>
+
+        <div class="col">
+          <img src="assests/images/wind.png">
+          <div>
+            <p class="wind">13 km/h</p>
+            <p>Wind Speed</p>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <script>
+    // OpenWeather API base URL and API key
+    const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+    const apiKey = "bc32824625473e1b6535e3538e09aa0a";
+
+    // Selecting DOM elements
+    const searchBox = document.querySelector('.search input');
+    const searchBtn = document.querySelector('.search button');
+    const weatherImg = document.querySelector('.weatherIcon');
+
+    // Function to fetch and display weather for a given city
+    async function checkWeather(city) {
+      const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+      
+      // If city is not found (status 404)
+      if (response.status == 404) {
+        document.querySelector('.error').style.display = 'block';   // Show error
+        document.querySelector('.weather').style.display = 'none';  // Hide weather
+      } else {
+        // If city is found, get weather data
+        var data = await response.json();
+        console.log(data.name); // Log city name in console
+
+        // Update UI with fetched weather data
+        document.querySelector('.city').innerHTML = data.name;
+        document.querySelector('.temp').innerHTML = Math.round(data.main.temp) + '°C';
+        document.querySelector('.humidity').innerHTML = data.main.humidity + '%';
+        document.querySelector('.wind').innerHTML = data.wind.speed + "km/h";
+
+        // Change weather icon based on condition
+        if (data.weather[0].main == 'Clear') {
+          weatherImg.src = "assests/images/clear.png";
+        } else if (data.weather[0].main == 'Clouds') {
+          weatherImg.src = "assests/images/clouds.png";
+        } else if (data.weather[0].main == 'Rain') {
+          weatherImg.src = "assests/images/rain.png";
+        } else if (data.weather[0].main == 'Drizzle') {
+          weatherImg.src = "assests/images/drizzle.png";
+        } else if (data.weather[0].main == 'Mist' || data.weather[0].main == 'Haze') {
+          weatherImg.src = "assests/images/mist.png";
+        }
+
+        // Show weather info and hide error
+        document.querySelector('.weather').style.display = "block";
+        document.querySelector('.error').style.display = "none";
+      }
+    }
+
+    // On button click, fetch weather of entered city
+    searchBtn.addEventListener('click', () => {
+      checkWeather(searchBox.value);
+    })
+  </script>
 </body>
 </html>
