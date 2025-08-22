@@ -45,14 +45,14 @@
 
         // Function to generate password
         function passwordGenerator() {
+            
             let password = '';
-
             // Ensure at least one character of each type
             password += upperCase[Math.floor(Math.random() * upperCase.length)];
             password += lowerCase[Math.floor(Math.random() * lowerCase.length)];
             password += number[Math.floor(Math.random() * number.length)];
             password += specialCharacters[Math.floor(Math.random() * specialCharacters.length)];
-
+            
             // Fill remaining length with random characters
             while (password.length < length) {
                 password += allChars[Math.floor(Math.random() * allChars.length)];
